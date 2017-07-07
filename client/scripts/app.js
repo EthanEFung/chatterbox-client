@@ -1,8 +1,11 @@
 var app = {
-  'server' : 'http://parse.la.hackreactor.com/chatterbox/classes/messages'
+  server: 'http://parse.la.hackreactor.com/chatterbox/classes/messages'
 };
 
-app.init = function() {};
+app.init = function() {
+  $('#main').append('<div id="roomSelect"></div>');
+};
+
 app.send = function(message) {
   $.ajax({
   // This is the url you should use to communicate with the parse API server.
@@ -41,6 +44,21 @@ app.clearMessages = function() {
   $('#chats').empty();
 };
 
-app.renderMessage = function(message) {
-  $('#chats').append("<div>" + message + "</div>");
+app.renderMessage = function(node) {
+  var $userName = node.username.split(' ').join('-');
+  $('#main').append('<div id=' + $userName + '></div>');
+  $('#chats').append('<div id=' + $userName + '>' + node.text + '</div>');
+};
+
+app.renderRoom = function(roomName) {
+  let $roomName = roomName.split(' ').join('-');
+  $('#roomSelect').append('<div id="' + $roomName + '"></div>');
+};
+
+app.handleUsernameClick = function() {
+  $('#main').find('.username').trigger('click');
+};
+
+app.handleSubmit = function() {
+
 };
