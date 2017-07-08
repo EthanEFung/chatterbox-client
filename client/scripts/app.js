@@ -18,11 +18,12 @@ app.init = function() {
 };
 
 app.send = function(message) {
+  console.log(message);
   $.ajax({
   // This is the url you should use to communicate with the parse API server.
     url: 'http://parse.la.hackreactor.com/chatterbox/classes/messages',
     type: 'POST',
-    data: JSON.stringify({order: "-createdAt"}),
+    data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Message sent');
@@ -71,8 +72,8 @@ app.clearMessages = function() {
 };
 
 app.renderMessage = function(node) {
+  //santize here
   let $userName = node.username.split(' ').join('-');
-  $('#main').prepend('<div id=' + $userName + '></div>');
   $('#chats').prepend('<div id=' + $userName + '>' + node.text + '</div>');
 };
 
