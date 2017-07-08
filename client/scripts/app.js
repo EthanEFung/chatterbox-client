@@ -18,7 +18,12 @@ app.init = function() {
 };
 
 app.send = function(message) {
-  console.log(message);
+  if(Array.isArray(message)) {
+    console.log('I\'m an Array', message);
+  } else if (typeof message === 'object') {
+    console.log(message);
+  }
+
   $.ajax({
   // This is the url you should use to communicate with the parse API server.
     url: 'http://parse.la.hackreactor.com/chatterbox/classes/messages',
@@ -90,7 +95,6 @@ app.handleUsernameClick = function() {
 //
 //
 };
-
 
 
 app.handleSubmit = function() {
