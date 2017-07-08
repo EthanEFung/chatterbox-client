@@ -1,10 +1,9 @@
-let Chatter = function(username, text, roomname) {
-  this.createdAt;
-  this.objectId;
-  this.roomname;
-  this.username;
-  this.text;
-  this.updatedAt; 
+let Chatter = function(text) {
+
+  this.roomname = $("#roomselect").val();
+  this.username = window.location.search;
+  this.text = text;
+
 };
 
 let app = {
@@ -18,26 +17,25 @@ app.init = function() {
 };
 
 app.send = function(message) {
-  if(Array.isArray(message)) {
-    console.log('I\'m an Array', message);
-  } else if (typeof message === 'object') {
-    console.log(message);
-  }
 
-  $.ajax({
-  // This is the url you should use to communicate with the parse API server.
-    url: 'http://parse.la.hackreactor.com/chatterbox/classes/messages',
-    type: 'POST',
-    data: JSON.stringify(message),
-    contentType: 'application/json',
-    success: function (data) {
-      console.log('chatterbox: Message sent');
-    },
-    error: function (data) {
-      // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-      console.error('chatterbox: Failed to send message', data);
-    }
-  });
+  let $message = app.renderMessage(message);
+  $.post('http://parse.la.hackreactor.com/chatterbox/classes/messages', $message);
+  
+
+  // $.ajax({
+  // // This is the url you should use to communicate with the parse API server.
+  //   url: 'http://parse.la.hackreactor.com/chatterbox/classes/messages',
+  //   type: 'POST',
+  //   data: {order:'-createdAt'},
+  //   contentType: 'application/json',
+  //   success: function (data) {
+  //     console.log('chatterbox: Message sent');
+  //   },
+  //   error: function (data) {
+  //     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
+  //     console.error('chatterbox: Failed to send message', data);
+  //   }
+  // });
 };
 
 app.fetch = function() { 
@@ -45,7 +43,7 @@ app.fetch = function() {
   // This is the url you should use to communicate with the parse API server.
     url: 'http://parse.la.hackreactor.com/chatterbox/classes/messages',
     type: 'GET',
-    
+    data: {order: '-createdAt'},
     contentType: 'application/json',
     success: function (data) {
       console.log(data);
@@ -76,10 +74,24 @@ app.clearMessages = function() {
   $('#chats').empty();
 };
 
-app.renderMessage = function(node) {
-  //santize here
-  let $userName = node.username.split(' ').join('-');
-  $('#chats').prepend('<div id=' + $userName + '>' + node.text + '</div>');
+app.renderMessage = function(message) {
+
+  if(message[0] === '<' || message[0] === '>') {
+    console.log('BLOCKED');
+    return;
+  } else {
+
+    let postifiedMessage = new Chatter(message);
+
+    let $message = message;
+    let $userName = postifiedMessage.username.split(' ').join('-');
+    let $roomname = postifiedMessage.roomname.split(' ').join('-');
+    $('#chats').prepend('<div id=' + $userName + '>' + $message + '</div>');
+
+  }
+  
+
+//creating a dom node <div id= username >message </div>
 };
 
 app.renderRoom = function(roomName) {
@@ -97,16 +109,18 @@ app.handleUsernameClick = function() {
 };
 
 
-app.handleSubmit = function() {
-
+app.handleSubmit = function(message) {
+  app.send(message);
 };
 
 $(document).ready(function() {
 
   app.init();
 
-  $('chatter-box-submit-button').on('click', function() {
-    let node = new Chatter();
-    app.renderMessage(node);
+  $('#chatter-box-submit-button').on('click', function() {
+    let message = $('#chatter-box-input').val();
+
+    app.handleSubmit(message);
   });
+
 });
