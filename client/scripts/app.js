@@ -46,19 +46,14 @@ app.fetch = function() {
     data: {order: '-createdAt'},
     contentType: 'application/json',
     success: function (data) {
-      console.log(data);
-      let i = 0;
       let fn = this;
       var refreshFeed = function() {
+        app.clearMessages();
         app.renderMessage(data.results);
-        i++;
+
       };
       refreshFeed();
-      //refreshFeed first
-      //clearMessages
-      //fetch
-
-      // setInterval(refreshFeed.bind(fn), 1000);//take data from outside
+      setInterval(refreshFeed.bind(fn), 1000);//take data from outside
       //store in a variable
       //data object
       //display
@@ -79,12 +74,12 @@ app.clearMessages = function() {
 app.renderMessage = function(messages) {
   messages.forEach(function (message) {
     if (!message.text || message.text[0] === '<' || message.text[0] === '>') {
-      console.log(message)
       console.log('BLOCKED');
     } else {
-      let postReady = new Chatter(message);
-      let $userName = postReady.username.split(' ').join('-');
-      let $roomname = postReady.roomname.split(' ').join('-');
+      let $userName = message.username.split('%20').join('-');
+      let $roomname = message.roomname.split('%20').join('-');
+
+      console.log($userName)
       $('#chats').prepend('<div id=' + $userName + '>' + message.text + '</div>');
     }
   })
