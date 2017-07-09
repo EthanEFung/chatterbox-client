@@ -50,12 +50,14 @@ app.fetch = function() {
       let i = 0;
       let fn = this;
       var refreshFeed = function() {
-    
-        app.renderMessage(data.results[i]);
+        app.renderMessage(data.results);
         i++;
       };
-
       refreshFeed();
+      //refreshFeed first
+      //clearMessages
+      //fetch
+
       // setInterval(refreshFeed.bind(fn), 1000);//take data from outside
       //store in a variable
       //data object
@@ -74,21 +76,45 @@ app.clearMessages = function() {
   $('#chats').empty();
 };
 
-app.renderMessage = function(message) {
+app.renderMessage = function(messages) {
+  messages.forEach(function (message) {
+    if (!message.text || message.text[0] === '<' || message.text[0] === '>') {
+      console.log(message)
+      console.log('BLOCKED');
+    } else {
+      let postReady = new Chatter(message);
+      let $userName = postReady.username.split(' ').join('-');
+      let $roomname = postReady.roomname.split(' ').join('-');
+      $('#chats').prepend('<div id=' + $userName + '>' + message.text + '</div>');
+    }
+  })
 
-  if(message[0] === '<' || message[0] === '>') {
-    console.log('BLOCKED');
-    return;
-  } else {
+  //renderMessages takes in an array of messages -> {}
+    //iterate
+      // if the message text begins with a '<' or '>'
+        //console.log('blocked'), and don't do anything
+      // otherwise 
+        // take the message, and use the properties username, text, and roomname 
+          //to create html tags with an 'id' and text
 
-    let postifiedMessage = new Chatter(message);
 
-    let $message = message;
-    let $userName = postifiedMessage.username.split(' ').join('-');
-    let $roomname = postifiedMessage.roomname.split(' ').join('-');
-    $('#chats').prepend('<div id=' + $userName + '>' + $message + '</div>');
+  // console.log('this is data.results: ', node);
 
-  }
+  // if(message[0] === '<' || message[0] === '>') {
+  //   console.log('BLOCKED');
+  //   return;
+  // } else {
+
+  //   let postifiedMessage = new Chatter(message);
+  //   console.log(postifiedMessage);
+
+  //   let $message = message;
+  //   console.log($message);
+  //   let $userName = postifiedMessage.username.split(' ').join('-');
+  //   let $roomname = postifiedMessage.roomname.split(' ').join('-');
+  //   $('#chats').prepend('<div id=' + $userName + '>' + $message + '</div>');
+
+  // }
   
 
 //creating a dom node <div id= username >message </div>
@@ -104,8 +130,6 @@ app.handleUsernameClick = function() {
 //plug in the message to the node constructor
 //after the message is plugged in
 //post it to the server
-//
-//
 };
 
 
@@ -122,5 +146,6 @@ $(document).ready(function() {
 
     app.handleSubmit(message);
   });
+  
 
 });
